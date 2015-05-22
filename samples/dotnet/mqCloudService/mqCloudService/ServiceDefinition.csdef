@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ServiceDefinition name="mqCloudService" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2014-01.2.3">
+  <WebRole name="mqWebSite" vmsize="Small">
+    <Runtime executionContext ="elevated" />
+    <LocalResources>
+      <LocalStorage name="MQTrace"
+      cleanOnRoleRecycle="false"
+      sizeInMB="1000" />
+    </LocalResources>
+    <Startup>
+      <Task commandLine="copytrccfg.cmd" executionContext="limited" taskType="simple">
+        <Environment>
+
+          <!-- Create the environment variable that informs the startup task where to find its Local 
+               Storage. %PathToStartupStorage% resolves to the fully qualified path to the location 
+               of the Local Storage.-->
+          <Variable name="PathToStartupStorage">
+            <RoleInstanceValue xpath="/RoleEnvironment/CurrentInstance/LocalResources/LocalResource[@name='MQTrace']/@path" />
+          </Variable>
+        </Environment>
+      </Task>
+    </Startup>
+    <Sites>
+      <Site name="Web">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="Endpoint1" />
+        </Bindings>
+      </Site>
+    </Sites>
+    <Endpoints>
+      <InputEndpoint name="Endpoint1" protocol="http" port="80" />
+    </Endpoints>
+    <Imports>
+      <Import moduleName="Diagnostics" />
+      <Import moduleName="RemoteAccess" />
+      <Import moduleName="RemoteForwarder" />
+    </Imports>
+    <Certificates>
+    </Certificates>
+  </WebRole>
+  <WorkerRole name="mqSqlWorker" vmsize="Small">
+    <Runtime executionContext ="elevated" />
+    <LocalResources>
+      <LocalStorage name="MQTrace"
+      cleanOnRoleRecycle="false"
+      sizeInMB="1000" />
+    </LocalResources>
+    <Imports>
+      <Import moduleName="Diagnostics" />
+      <Import moduleName="RemoteAccess" />
+    </Imports>
+  </WorkerRole>
+</ServiceDefinition>

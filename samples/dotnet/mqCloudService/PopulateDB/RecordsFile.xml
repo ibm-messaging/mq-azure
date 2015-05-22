@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<UniversityList>
+  <University>
+    <Name>Oxford University</Name>
+    <Address>London, England</Address>
+    <Rating>1</Rating>
+  </University>
+  <University>
+    <Name>Indian Institue of Science</Name>
+    <Address>Bangalore, India</Address>
+    <Rating>2</Rating>
+  </University>
+  <University>
+    <Name>UNC Chapel Hill</Name>
+    <Address>Chapel Hill, NC, USA</Address>
+    <Rating>3</Rating>
+  </University>
+  <University>
+    <Name>Perdue University</Name>
+    <Address>USA</Address>
+    <Rating>4</Rating>
+  </University>
+  <University>
+    <Name>Univeristy of California</Name>
+    <Address>Berkley, CA, USA</Address>
+    <Rating>5</Rating>
+  </University>
+  <University>
+    <Name>Kelloggs Inistitue</Name>
+    <Address>USA</Address>
+    <Rating>6</Rating>
+  </University>
+  <University>
+    <Name>Pensilvania State University</Name>
+    <Address>USA</Address>
+    <Rating>7</Rating>
+  </University>
+  <University>
+    <Name>London School of Economics</Name>
+    <Address>London, England</Address>
+    <Rating>8</Rating>
+  </University>
+  <University>
+    <Name>Indian Institute of Technology Bombay</Name>
+    <Address>Mumbai,India</Address>
+    <Rating>9</Rating>
+  </University>
+  <University>
+    <Name>Rochester Institute of Technology</Name>
+    <Address>Rochester, NY, USA</Address>
+    <Rating>10</Rating>
+  </University>
+  <University>
+    <Name>Paris-Sorbonne University</Name>
+    <Address>Paris, France</Address>
+    <Rating>11</Rating>
+  </University>
+  <University>
+    <Name>Dresden University of Technology</Name>
+    <Address>Dresden, Germany</Address>
+    <Rating>12</Rating>
+  </University>
+  <University>
+    <Name>Federal University of Rio de Janeiro</Name>
+    <Address>Rio de Janeiro, Brasil</Address>
+    <Rating>12</Rating>
+  </University>
+</UniversityList>
