@@ -1,0 +1,106 @@
+#!/bin/bash
+
+# (C) Copyright IBM Corporation 2016
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Arguments:
+#     cluster name
+#     node name (MQ1, MQ2 or Pacemaker)
+
+generateConfFile () {
+    # The mcastaddr below should not be necessary but there is a bug in corosync that requires it
+    cat > /etc/corosync/corosync.conf <<-EOF
+totem {
+    version: 2
+    cluster_name $1
+    crypto_cipher: none
+    crypto_hash: none
+    clear_node_high_bit: yes
+    interface {
+        ringnumber: 0
+        bindnetaddr: $2
+        mcastaddr: $2
+        mcastport 5405
+    }
+    interface {
+        ringnumber: 1
+        bindnetaddr: $3
+        mcastaddr: $3
+        mcastport 5407
+    }
+    transport: udpu
+    rrp_mode: active
+}
+logging {
+    fileline: off
+    to_syslog: yes
+    debug: off
+    timestamp: on
+    logger_subsys {
+        subsys: QUORUM
+        debug: off
+    }
+}
+nodelist {
+    node {
+        ring0_addr: $4
+        ring1_addr: $5
+        nodeid: 1
+    }
+    node {
+        ring0_addr: $6
+        ring1_addr: $7
+        nodeid: 2
+    }
+    node {
+        ring0_addr: $8
+        ring1_addr: $9
+        nodeid: 3
+    }
+}
+
+quorum {
+    provider: corosync_votequorum
+}
+EOF
+}
+
+# Set localIP1 and localIP2 based on node name
+case $2 in
+    Pacemaker)
+        localIP1="192.168.1.11"
+        localIP2="192.168.2.11"
+        ;;
+    MQ1)
+        localIP1="192.168.1.12"
+        localIP2="192.168.2.12"
+        ;;
+    MQ2)
+        localIP1="192.168.1.13"
+        localIP2="192.168.2.13"
+        ;;
+    *)
+        echo "Unexpected node name $2"
+        ;;
+esac
+
+generateConfFile $1 $localIP1 $localIP2 192.168.1.11 192.168.2.11 192.168.1.12 192.168.2.12 192.168.1.13 192.168.2.13
+
+#localIP=$(hostname -I | tr -d ' ')
+
+service corosync start
+service pacemaker start
+update-rc.d pacemaker defaults
+
+crm configure property stonith-enabled=false
