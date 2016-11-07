@@ -56,16 +56,19 @@ nodelist {
     node {
         ring0_addr: $4
         ring1_addr: $5
+        name: Pacemaker
         nodeid: 1
     }
     node {
         ring0_addr: $6
         ring1_addr: $7
+        name: MQ1
         nodeid: 2
     }
     node {
         ring0_addr: $8
         ring1_addr: $9
+        name: MQ2
         nodeid: 3
     }
 }

@@ -45,7 +45,7 @@
     "dataSubnetPrefix": "192.168.3.0/24",
     "publicSubnetPrefix": "192.168.4.0/24",
     "availabilitySetName": "[concat(parameters('clusterName'),'-AS')]",
-    "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'salinuxvm')]",
+    "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'storage')]",
     "imagePublisher": "Canonical",
     "imageOffer": "UbuntuServer",
     "PacemakerOSdiskName": "PacemakerOSdisk",
@@ -375,6 +375,9 @@
       "type": "Microsoft.Network/networkInterfaces",
       "name": "Pacemaker-NIC-Primary",
       "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+      ],
       "properties": {
         "ipConfigurations": [
           {
@@ -464,6 +467,9 @@
       "type": "Microsoft.Network/networkInterfaces",
       "name": "MQ1-NIC-Data",
       "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+      ],
       "properties": {
         "ipConfigurations": [
           {
@@ -511,6 +517,9 @@
       "type": "Microsoft.Network/networkInterfaces",
       "name": "MQ2-NIC-Primary",
       "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+      ],
       "properties": {
         "ipConfigurations": [
           {
@@ -554,6 +563,9 @@
       "type": "Microsoft.Network/networkInterfaces",
       "name": "MQ2-NIC-Data",
       "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+      ],
       "properties": {
         "ipConfigurations": [
           {
@@ -622,21 +634,21 @@
     }
   ],
   "outputs": {
-    "hostname1": {
-      "type": "string",
-      "value": "[concat(variables('dnsLabelPrefix1'), '.', resourceGroup().location, '.cloudapp.azure.com')]"
-    },
     "sshCommand1": {
       "type": "string",
       "value": "[concat('ssh ', parameters('adminUsername'), '@', variables('dnsLabelPrefix1'), '.', resourceGroup().location, '.cloudapp.azure.com')]"
     },
-    "hostname2": {
-      "type": "string",
-      "value": "[concat(variables('dnsLabelPrefix2'), '.', resourceGroup().location, '.cloudapp.azure.com')]"
-    },
     "sshCommand2": {
       "type": "string",
       "value": "[concat('ssh ', parameters('adminUsername'), '@', variables('dnsLabelPrefix2'), '.', resourceGroup().location, '.cloudapp.azure.com')]"
+    },
+    "storageName": {
+      "type": "string",
+      "value": "[variables('storageAccountName')]"
+    },
+    "storageKey": {
+      "type": "string",
+      "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2016-01-01').keys[0].value]"
     }
   }
 }
