@@ -32,6 +32,12 @@ else
     chmod 400 /root/mqshare_credentials
     echo "//${1}.file.core.windows.net/mqshare /mnt/mqshare cifs vers=3.0,credentials=/root/mqshare_credentials,dir_mode=0775,file_mode=0775,uid=mqm,gid=mqm,nobrl" >> /etc/fstab
     mount /mnt/mqshare
-    mkdir /mnt/mqshare/data
-    mkdir /mnt/mqshare/logs
+    if [[ ! -d /mnt/mqshare/data ]]
+    then
+        mkdir /mnt/mqshare/data
+    fi
+    if [[ ! -d /mnt/mqshare/logs ]]
+    then
+        mkdir /mnt/mqshare/logs
+    fi
 fi

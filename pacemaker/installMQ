@@ -25,6 +25,7 @@ else
     tar -xzf mqadv_dev90_linux_x86-64.tar.gz
     cd MQServer
     ./mqlicense.sh -accept
+    apt-get update
     apt-get -y install rpm
     rpm -ivh --force-debian *.rpm
 

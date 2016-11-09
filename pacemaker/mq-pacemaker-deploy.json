@@ -66,7 +66,11 @@
     "primarySubnetRef": "[concat(variables('vnetID'),'/subnets/',variables('primarySubnetName'))]",
     "alternateSubnetRef": "[concat(variables('vnetID'),'/subnets/',variables('alternateSubnetName'))]",
     "dataSubnetRef": "[concat(variables('vnetID'),'/subnets/',variables('dataSubnetName'))]",
-    "publicSubnetRef": "[concat(variables('vnetID'),'/subnets/',variables('publicSubnetName'))]"
+    "publicSubnetRef": "[concat(variables('vnetID'),'/subnets/',variables('publicSubnetName'))]",
+    "primarySubnetNSGname": "PrimarySubnetNSG",
+    "alternateSubnetNSGname": "AlternateSubnetNSG",
+    "dataSubnetNSGname": "DataSubnetNSG",
+    "publicSubnetNSGname": "PublicSubnetNSG"
   },
   "resources": [
     {
@@ -74,6 +78,12 @@
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[variables('virtualNetworkName')]",
       "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkSecurityGroups/', variables('primarySubnetNSGname'))]",
+        "[concat('Microsoft.Network/networkSecurityGroups/', variables('alternateSubnetNSGname'))]",
+        "[concat('Microsoft.Network/networkSecurityGroups/', variables('dataSubnetNSGname'))]",
+        "[concat('Microsoft.Network/networkSecurityGroups/', variables('publicSubnetNSGname'))]"
+      ],
       "properties": {
         "addressSpace": {
           "addressPrefixes": [
@@ -84,25 +94,173 @@
           {
             "name": "[variables('primarySubnetName')]",
             "properties": {
-              "addressPrefix": "[variables('primarySubnetPrefix')]"
+              "addressPrefix": "[variables('primarySubnetPrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('primarySubnetNSGname'))]"
+              }
             }
           },
           {
             "name": "[variables('alternateSubnetName')]",
             "properties": {
-              "addressPrefix": "[variables('alternateSubnetPrefix')]"
+              "addressPrefix": "[variables('alternateSubnetPrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('alternateSubnetNSGname'))]"
+              }
             }
           },
           {
             "name": "[variables('dataSubnetName')]",
             "properties": {
-              "addressPrefix": "[variables('dataSubnetPrefix')]"
+              "addressPrefix": "[variables('dataSubnetPrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('dataSubnetNSGname'))]"
+              }
             }
           },
           {
             "name": "[variables('publicSubnetName')]",
             "properties": {
-              "addressPrefix": "[variables('publicSubnetPrefix')]"
+              "addressPrefix": "[variables('publicSubnetPrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('publicSubnetNSGname'))]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[variables('primarySubnetNSGname')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "NSG - Primary Subnet"
+      },
+      "properties": {
+        "securityRules": [
+          {
+            "name": "allow-Pacemaker",
+            "properties": {
+              "description": "Allow Pacemaker traffic over primary subnet",
+              "protocol": "Udp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "5404-5405",
+              "sourceAddressPrefix": "[variables('primarySubnetPrefix')]",
+              "destinationAddressPrefix": "[variables('primarySubnetPrefix')]",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "allow-ssh-primary",
+            "properties": {
+              "description": "Allow SSH from other VMs on primary subnet",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "22",
+              "sourceAddressPrefix": "[variables('primarySubnetPrefix')]",
+              "destinationAddressPrefix": "[variables('primarySubnetPrefix')]",
+              "access": "Allow",
+              "priority": 300,
+              "direction": "Inbound"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[variables('alternateSubnetNSGname')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "NSG - Alternate Subnet"
+      },
+      "properties": {
+        "securityRules": [
+          {
+            "name": "allow-Pacemaker",
+            "properties": {
+              "description": "Allow Pacemaker traffic over alternate subnet",
+              "protocol": "Udp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "5406-5407",
+              "sourceAddressPrefix": "[variables('alternateSubnetPrefix')]",
+              "destinationAddressPrefix": "[variables('alternateSubnetPrefix')]",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "block-internet",
+            "properties": {
+              "description": "Block Internet",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "Internet",
+              "access": "Deny",
+              "priority": 400,
+              "direction": "Outbound"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[variables('dataSubnetNSGname')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "NSG - Data Subnet"
+      },
+      "properties": {
+        "securityRules": [
+          {
+            "name": "allow-AzureFiles",
+            "properties": {
+              "description": "Allow access to Azure Files storage",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "[variables('dataSubnetPrefix')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Outbound"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[variables('publicSubnetNSGname')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "NSG - Primary Subnet"
+      },
+      "properties": {
+        "securityRules": [
+          {
+            "name": "allow-ssh-internet",
+            "properties": {
+              "description": "Allow SSH from Internet",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "22",
+              "sourceAddressPrefix": "Internet",
+              "destinationAddressPrefix": "[variables('publicSubnetPrefix')]",
+              "access": "Allow",
+              "priority": 200,
+              "direction": "Inbound"
             }
           }
         ]
@@ -196,6 +354,9 @@
         "[concat('Microsoft.Network/networkInterfaces/', 'MQ1-NIC-Public')]"
       ],
       "properties": {
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availabilitySetName'))]"
+        },
         "hardwareProfile": {
           "vmSize": "[variables('vmSize')]"
         },
@@ -280,6 +441,9 @@
         "[concat('Microsoft.Network/networkInterfaces/', 'MQ2-NIC-Public')]"
       ],
       "properties": {
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availabilitySetName'))]"
+        },
         "hardwareProfile": {
           "vmSize": "[variables('vmSize')]"
         },
