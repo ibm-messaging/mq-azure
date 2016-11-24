@@ -35,7 +35,6 @@
     }
   },
   "variables": {
-    "vnetAddressPrefix": "192.168.0.0/16",
     "primarySubnetName": "PrimarySubnet",
     "alternateSubnetName": "AlternateSubnet",
     "dataSubnetName": "DataSubnet",
@@ -54,12 +53,10 @@
     "PacemakerDataDiskName": "PacemakerDataDisk",
     "MQ1DataDiskName": "MQ1DataDisk",
     "MQ2DataDiskName": "MQ2DataDisk",
-    "storageAccountType": "Standard_LRS",
     "vmStorageAccountContainerName": "vhds",
     "dnsLabelPrefix1": "[concat(parameters('clusterName'),'mq1')]",
     "dnsLabelPrefix2": "[concat(parameters('clusterName'),'mq2')]",
     "PacemakerVMname": "[concat(parameters('clusterName'),'-Pacemaker')]",
-    "pacemakerVmSize": "Standard_A3",
     "vmSize": "Standard_A4",
     "virtualNetworkName": "[concat(parameters('clusterName'),'-VNET')]",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
@@ -87,7 +84,7 @@
       "properties": {
         "addressSpace": {
           "addressPrefixes": [
-            "[variables('vnetAddressPrefix')]"
+            "192.168.0.0/16"
           ]
         },
         "subnets": [
@@ -283,7 +280,7 @@
           "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availabilitySetName'))]"
         },
         "hardwareProfile": {
-          "vmSize": "[variables('pacemakerVmSize')]"
+          "vmSize": "Standard_A3"
         },
         "storageProfile": {
           "imageReference": {
@@ -529,7 +526,7 @@
       "location": "[resourceGroup().location]",
       "comments": "Storage account to use for VM disks etc. and Azure File service.",
       "sku": {
-        "name": "[variables('storageAccountType')]"
+        "name": "Standard_LRS"
       },
       "kind": "Storage",
       "properties": {}
