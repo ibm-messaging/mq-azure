@@ -336,7 +336,7 @@ On the MQ2 node run `sudo ./configurePacemaker <cluster name> MQ2`
 
 # Mount the Azure File share
 
-On each of the MQ nodes run `sudo ./mountData <storageName> <storageKey>
+On each of the MQ nodes run `sudo ./mountData <storageName> <storageKey>`
 
 # Create Queue Manager
 
