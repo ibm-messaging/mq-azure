@@ -418,6 +418,15 @@ Online: [ MQ2 Pacemaker ]
 
 This shows that the node MQ1 is in standby mode and that HAQM1 is now running on the node MQ2.
 
+Do the following on MQ2:
+
+```
+cd /opt/mqm/samp/bin
+./amqsget QUEUE1 HAQM1
+```
+
+You should see the messages that you put on MQ1.
+
 ## Restoring MQ1
 
 To restore the node MQ1 to active participation in the cluster, run the command `sudo crm node online MQ1`
@@ -446,5 +455,5 @@ the cluster, subject to the constraints placed on the resources.
 
 # Summary
 
-This sample has shown hot to use Pacemaker to manage an IBM MQ queue manager that can run on two nodes in a three-node Pacemaker cluster, using shared data which in this case is
+This sample has shown how to use Pacemaker to manage an IBM MQ queue manager that can run on two nodes in a three-node Pacemaker cluster, using shared data which in this case is
 an Azure File share.
