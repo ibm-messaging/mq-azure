@@ -254,7 +254,7 @@ and the fault domain and update domain for each.
 When I did this I saw the following:
 
 | NAME | FAULT DOMAIN | UPDATE DOMAIN |
-| --- | --- |
+| --- | --- | --- |
 | mqcluster1-Pacemaker | 2 | 2 |
 | mqcluster1mq1 | 1 | 1 |
 | mqcluster1mq2 | 0 | 0 |
