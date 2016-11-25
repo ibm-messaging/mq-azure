@@ -248,7 +248,7 @@ As described above, the template includes the definition of an availability set 
 its own update domain.
 
 To see that the three virtual machines have been put into different fault zones and update zones by the deployment, in the Microsoft Azure Portal
-go to `All resources` and find the Availability set. In the right-hand window you should see a list of the virtual machines in the Availability set
+go to `All resources` and find the Availability set. Click on the Availability set name and in the right-hand window you should see a list of the virtual machines in the Availability set
 and the fault domain and update domain for each.
 
 When I did this I saw the following:
